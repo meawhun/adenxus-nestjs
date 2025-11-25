@@ -1,7 +1,9 @@
 import { Controller, Get, Post, Body, UnauthorizedException, UseGuards, Request } from '@nestjs/common';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './middleware/jwt-auth.guard';
 import { AppService } from './app.service';
 import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
+import { LocalAuthGuard } from './middleware/local-auth.guard';
 
 @Controller()
 export class AppController {
@@ -21,12 +23,15 @@ export class AppController {
     return req.user;
   }
 
+  // @UseGuards(AuthGuard('local'))
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() body: { username: string; password: string }) {
-    const user = await this.authService.validateUser(body.username, body.password);
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return this.authService.login(user);
+  async login(@Request() req) {
+    return this.authService.login(req.user);
+  }
+
+  @Post('refresh')
+  async refresh(@Body() body: { userId: string; refreshToken: string }) {
+    return this.authService.refreshToken(body.userId, body.refreshToken);
   }
 }
