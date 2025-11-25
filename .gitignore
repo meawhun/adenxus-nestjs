@@ -2,7 +2,7 @@
 /dist
 /node_modules
 /build
-
+workshop/*/node_modules
 # Logs
 logs
 *.log
