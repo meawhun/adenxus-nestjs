@@ -1,14 +1,23 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, MessageBody } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
-@WebSocketGateway({ namespace: '/socketio' })
+@WebSocketGateway()
 export class AppGateway {
     @WebSocketServer()
     server: Server;
 
     @SubscribeMessage('message')
-    handleMessage(@MessageBody() data: object): void {
-        this.server.emit('message', JSON.stringify({ data }));
+    handleMessage(@MessageBody() data: any): void {
+        console.log('Received message:', data);
+        // this.server.emit('message', JSON.stringify({  }));
+        // this.server.emit('message', "okokk");
+        if (data && (data.text === "ping")) {
+            this.server.emit('message', `pong`);
+        } else if (data && (data.text === "pong")) {
+            this.server.emit('message', `ping`);
+        } else {
+            this.server.emit('message', `Echo: ${data.text}`);
+        }
     }
 
     // Example: broadcast every second

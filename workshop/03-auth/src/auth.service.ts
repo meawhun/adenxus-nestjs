@@ -32,7 +32,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid refresh token');
         }
         try {
-            const payload = jwt.verify(refreshToken, this.configService.get<string>('JWT_REFRESH_SECRET')) as any;
+            const payload = jwt.verify(refreshToken, this.configService.get<string>('JWT_REFRESH_SECRET')  || "secret") as any;
             const newAccessToken = this.generateAccessToken({ username: payload.username, sub: payload.sub });
             const newRefreshToken = this.generateRefreshToken({ username: payload.username, sub: payload.sub });
             refreshTokensStore[userId] = newRefreshToken;
@@ -46,14 +46,14 @@ export class AuthService {
     }
 
     private generateAccessToken(payload: any): string {
-        return jwt.sign(payload, this.configService.get<string>('JWT_SECRET'), {
-            expiresIn: this.configService.get<string>('JWT_EXPIRES_IN'),
-        });
+        return jwt.sign(payload, this.configService.get<string>('JWT_SECRET') || "secret", {
+            expiresIn: this.configService.get<string>('JWT_EXPIRES_IN') || '1h',
+        } as jwt.SignOptions);
     }
 
     private generateRefreshToken(payload: any): string {
-        return jwt.sign(payload, this.configService.get<string>('JWT_REFRESH_SECRET'), {
-            expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN'),
-        });
+        return jwt.sign(payload, this.configService.get<string>('JWT_REFRESH_SECRET') || "secret", {
+            expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRES_IN') || '7d',
+        } as jwt.SignOptions);
     }
 }

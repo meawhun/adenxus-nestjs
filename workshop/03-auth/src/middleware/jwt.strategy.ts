@@ -16,6 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
+        console.log('JWT payload:', payload);
         const user = users.find((u: any) => u.id === payload.sub);
         if (!user) return null;
         return user;

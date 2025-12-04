@@ -20,6 +20,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
+    console.log('Profile request user:', req.user);
     return req.user;
   }
 
@@ -27,6 +28,7 @@ export class AppController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
+    console.log('Login request user:', req.user);
     return this.authService.login(req.user);
   }
 
